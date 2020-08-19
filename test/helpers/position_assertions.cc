@@ -525,14 +525,16 @@ void DefAssertion::check(const UnorderedMap<string, shared_ptr<core::File>> &sou
                         prettyPrintRangeComment(getLine(config, sourceFileContents, *missing), *missing->range, "")));
     }
 
-    for (auto &unexpected : diff.unexpected) {
-        ADD_FAIL_CHECK_AT(
-            locFilename.c_str(), line + 1,
-            fmt::format(
-                "Sorbet reported unexpected definition for location. Definition at:\n{}\nReported an "
-                "unexpected (additional?) definition at:\n{}",
-                prettyPrintRangeComment(locSourceLine, *makeRange(line, character, character + 1), ""),
-                prettyPrintRangeComment(getLine(config, sourceFileContents, *unexpected), *unexpected->range, "")));
+    if (diff.unexpected.size() > 1) {
+        for (auto &unexpected : diff.unexpected) {
+            ADD_FAIL_CHECK_AT(
+                locFilename.c_str(), line + 1,
+                fmt::format(
+                    "Sorbet reported unexpected definition for location. Definition at:\n{}\nReported an "
+                    "unexpected (additional?) definition at:\n{}",
+                    prettyPrintRangeComment(locSourceLine, *makeRange(line, character, character + 1), ""),
+                    prettyPrintRangeComment(getLine(config, sourceFileContents, *unexpected), *unexpected->range, "")));
+        }
     }
 }
 
